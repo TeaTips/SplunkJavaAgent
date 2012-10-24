@@ -1,0 +1,96 @@
+<project
+    name="Splunk Java Agent"
+    basedir=".."
+    default="build_release" >
+
+    <description>
+		Splunk Java Agent Build Script
+    </description>
+
+    <property file="build/build.properties" />
+
+    <path id="project.class.path" >
+
+        <fileset dir="${lib}" >
+
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+    <target name="init" >
+
+        <delete dir="${temp_build}" />
+
+        <mkdir dir="${temp_build}" />
+    </target>
+
+    <target
+        name="compile"
+        depends="init"
+        description="compile the source " >
+
+        <!-- Compile the java code from ${src} into ${build} -->
+
+        <mkdir dir="${temp_build}/${classes}" />
+
+        <javac
+            destdir="${temp_build}/${classes}"
+            srcdir="${src}"
+            target="${javaClassTarget}" >
+
+            <classpath refid="project.class.path" />
+        </javac>
+    </target>
+
+    <target
+        name="build_release"
+        depends="compile"
+        description="generate a distribution" >
+
+        <!-- Create the distribution directory -->
+
+        <copy todir="${temp_build}" >
+
+            <fileset file="${license_file}" />
+            <fileset file="${readme_file}" />
+        </copy>
+
+        <jar jarfile="${temp_build}/${main_jar}" >
+
+            <fileset
+                dir="${temp_build}/${classes}"
+                includes="com/splunk/**" excludes="com/splunk/javaagent/test/**" />
+            
+            <fileset
+                dir="${lib}"
+                includes="org/objectweb/asm/**" />
+            
+            <fileset
+                dir="${config}"
+                includes="${props_file}" />
+
+            <manifest>
+
+                <attribute
+                    name="Premain-Class"
+                    value="${manifest-premain-class}" />
+                
+            </manifest>
+            
+        </jar>
+
+        <delete dir="${temp_build}/${classes}" />
+
+        <tar
+            compression="${compressionType}"
+            destfile="${release}/${product_name}${suffix}" >
+
+            <zipfileset
+                dir="${temp_build}"
+                prefix="${product_name}" />
+        </tar>
+
+        <delete dir="${temp_build}" />
+    </target>
+
+</project>
