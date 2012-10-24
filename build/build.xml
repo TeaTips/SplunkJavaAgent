@@ -54,16 +54,15 @@
             <fileset file="${license_file}" />
             <fileset file="${readme_file}" />
         </copy>
-
+        
+        <unzip src="${lib}/asm-4.1.jar" dest="${temp_build}/${classes}"/>
+        <unzip src="${lib}/asm-commons-4.1.jar" dest="${temp_build}/${classes}"/>
+        
         <jar jarfile="${temp_build}/${main_jar}" >
 
             <fileset
                 dir="${temp_build}/${classes}"
-                includes="com/splunk/**" excludes="com/splunk/javaagent/test/**" />
-            
-            <fileset
-                dir="${lib}"
-                includes="org/objectweb/asm/**" />
+                includes="com/splunk/**,org/objectweb/asm/**" excludes="com/splunk/javaagent/test/**" />
             
             <fileset
                 dir="${config}"
