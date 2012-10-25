@@ -1382,7 +1382,7 @@ public class SplunkLogEvent {
 		if (useInternalDate) {
 
 			StringBuffer clonedMessage = new StringBuffer();
-			clonedMessage.append(new Date()).append(PAIRDELIM)
+			clonedMessage.append(System.currentTimeMillis()).append(PAIRDELIM)
 					.append(this.eventMessage);
 			event = clonedMessage.toString();
 		} else

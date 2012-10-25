@@ -27,7 +27,8 @@ public class TestProgram {
 		System.out.println("Executing boo()");
 		try {
 			Thread.sleep(500);
-			new Goo().goo();
+			Goo g = new Goo();
+			g.goo();
 		} catch (InterruptedException e) {
 
 		}

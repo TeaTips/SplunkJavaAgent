@@ -229,7 +229,7 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 
 		classLoaded(className);
 		ClassReader cr = new ClassReader(classFileBuffer);
-		ClassWriter cw = new ClassWriter(cr, 0);
+		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 		ClassTracerAdaptor ca = new ClassTracerAdaptor(cw);
 		cr.accept(ca, 8);
 		return cw.toByteArray();
@@ -239,8 +239,8 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 	public static void classLoaded(String className) {
 
 		if (agent.traceClassLoaded) {
-			SplunkLogEvent event = new SplunkLogEvent("class_loaded", "splunkagent", true,
-					false);
+			SplunkLogEvent event = new SplunkLogEvent("class_loaded",
+					"splunkagent", true, false);
 			event.addPair("appName", agent.appName);
 			event.addPair("appID", agent.appID);
 			event.addPair("className", className);
@@ -251,11 +251,11 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 	public static void methodEntered(String className, String methodName) {
 
 		if (agent.traceMethodEntered) {
-			SplunkLogEvent event = new SplunkLogEvent("method_entered", "splunkagent",
-					true, false);
+			SplunkLogEvent event = new SplunkLogEvent("method_entered",
+					"splunkagent", true, false);
 			event.addPair("appName", agent.appName);
 			event.addPair("appID", agent.appID);
-			event.addPair("nanoTime", System.nanoTime());
+			// event.addPair("nanoTime", System.nanoTime());
 			event.addPair("className", className);
 			event.addPair("methodName", methodName);
 			event.addPair("threadID", Thread.currentThread().getId());
@@ -268,11 +268,11 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 
 		if (agent.traceMethodExited) {
 
-			SplunkLogEvent event = new SplunkLogEvent("method_exited", "splunkagent",
-					true, false);
+			SplunkLogEvent event = new SplunkLogEvent("method_exited",
+					"splunkagent", true, false);
 			event.addPair("appName", agent.appName);
 			event.addPair("appID", agent.appID);
-			event.addPair("nanoTime", System.nanoTime());
+			// event.addPair("nanoTime", System.nanoTime());
 			event.addPair("className", className);
 			event.addPair("methodName", methodName);
 			event.addPair("threadID", Thread.currentThread().getId());
