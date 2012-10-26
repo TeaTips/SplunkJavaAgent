@@ -11,6 +11,16 @@ public class TestProgram {
 		test.zoo();
 		test.boo();
 
+		try {
+			int f = 1;
+			System.out.println(f);
+			throw new Exception("foo");
+		} catch (Exception e) {
+
+		} catch (Error e) {
+
+		}
+
 	}
 
 	private void zoo() {

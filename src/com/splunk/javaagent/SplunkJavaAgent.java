@@ -29,6 +29,7 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 	private boolean traceMethodExited;
 	private boolean traceMethodEntered;
 	private boolean traceClassLoaded;
+	private boolean traceErrors;
 
 	private String appName;
 	private String appID;
@@ -201,6 +202,8 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 					.getProperty("trace.methodEntered", "true"));
 			this.traceMethodExited = Boolean.parseBoolean(agent.props
 					.getProperty("trace.methodExited", "true"));
+			this.traceErrors = Boolean.parseBoolean(agent.props.getProperty(
+					"trace.errors", "true"));
 		} catch (IOException e) {
 			return false;
 		} finally {
@@ -280,6 +283,22 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 			event.addPair("appName", agent.appName);
 			event.addPair("appID", agent.appID);
 			// event.addPair("nanoTime", System.nanoTime());
+			event.addPair("className", className);
+			event.addPair("methodName", methodName);
+			event.addPair("threadID", Thread.currentThread().getId());
+			event.addPair("threadName", Thread.currentThread().getName());
+			agent.transport.send(event);
+		}
+	}
+
+	public static void throwableCaught(String className, String methodName) {
+
+		if (agent.traceErrors) {
+
+			SplunkLogEvent event = new SplunkLogEvent("throwable_caught",
+					"splunkagent", true, false);
+			event.addPair("appName", agent.appName);
+			event.addPair("appID", agent.appID);
 			event.addPair("className", className);
 			event.addPair("methodName", methodName);
 			event.addPair("threadID", Thread.currentThread().getId());

@@ -1,6 +1,5 @@
 package com.splunk.javaagent;
 
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -36,14 +35,27 @@ public class MethodTracerAdaptor extends MethodVisitor {
 	public void visitInsn(int opcode) {
 
 		try {
-			if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
-					|| opcode == Opcodes.ATHROW) {
+
+			if (opcode == Opcodes.ATHROW) {
+				mv.visitLdcInsn(cName);
+				mv.visitLdcInsn(mName);
+				mv.visitMethodInsn(Opcodes.INVOKESTATIC,
+						"com/splunk/javaagent/SplunkJavaAgent",
+						"throwableCaught",
+						"(Ljava/lang/String;Ljava/lang/String;)V");
+			}
+
+			if (opcode == Opcodes.IRETURN || opcode == Opcodes.FRETURN
+					|| opcode == Opcodes.RETURN || opcode == Opcodes.ARETURN
+					|| opcode == Opcodes.LRETURN || opcode == Opcodes.DRETURN) {
+
 				mv.visitLdcInsn(cName);
 				mv.visitLdcInsn(mName);
 				mv.visitMethodInsn(Opcodes.INVOKESTATIC,
 						"com/splunk/javaagent/SplunkJavaAgent", "methodExited",
 						"(Ljava/lang/String;Ljava/lang/String;)V");
 			}
+
 			mv.visitInsn(opcode);
 
 		} catch (Exception e) {

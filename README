@@ -12,6 +12,11 @@ It is able to obtain these metrics dynamically at runtime by "weaving" the neces
 There is no source code changes required by the end user and no class files on disk are altered.
 By default , the metrics will be streamed directly into Splunk over TCP, however the transport mechanism is configurable and extensible.
 
+Supported Java Runtime
+----------------------
+
+JRE 5+
+JVMs : Hotspot , JRockit, OpenJDK, IBM J9
 
 Install
 -------
@@ -53,11 +58,12 @@ app.instance : instance identifier of the application ie: might be a node id in 
 trace.methodEntered : true | false
 trace.methodExited : true | false
 trace.classLoaded : true | false
+trace.errors : true | false
 
 Whitelist/Blacklist Patterns
 ----------------------------
 
-Partialy package name : com/splunk/
+Partial package name : com/splunk/
 Full package name : com/splunk/javaagent/test/
 Fully qualified class : com/splunk/javaagent/test/MyClass
 Fully qualified class and method : com/splunk/javaagent/test/MyClass:someMethod
