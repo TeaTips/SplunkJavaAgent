@@ -218,10 +218,17 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 	public byte[] transform(ClassLoader loader, String className,
 			Class classBeingRedefined, ProtectionDomain protectionDomain,
 			byte[] classFileBuffer) throws IllegalClassFormatException {
-		if (!isBlackListed(className) && isWhiteListed(className))
-			return processClass(className, classBeingRedefined, classFileBuffer);
-		else
+
+		if (this.getClass().getClassLoader().equals(loader)) {
+
+			if (!isBlackListed(className) && isWhiteListed(className))
+				return processClass(className, classBeingRedefined,
+						classFileBuffer);
+			else
+				return classFileBuffer;
+		} else {
 			return classFileBuffer;
+		}
 	}
 
 	private byte[] processClass(String className, Class classBeingRedefined,
