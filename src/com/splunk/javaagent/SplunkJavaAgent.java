@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -30,14 +31,20 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 	private boolean traceMethodEntered;
 	private boolean traceClassLoaded;
 	private boolean traceErrors;
+	private Map<String, String> userTags;
 
+	private ArrayBlockingQueue<SplunkLogEvent> eventQueue;
 	private String appName;
 	private String appID;
+
+	private TransporterThread transporterThread;
 
 	public SplunkJavaAgent() {
 
 		whiteList = new ArrayList<FilterListItem>();
 		blackList = new ArrayList<FilterListItem>();
+		eventQueue = new ArrayBlockingQueue<SplunkLogEvent>(1000);
+
 	}
 
 	public static void premain(String agentArgument,
@@ -50,10 +57,14 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 			return;
 		if (!agent.initFilters())
 			return;
+		if (!agent.initUserTags())
+			return;
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
 				try {
+
+					agent.transporterThread.stopTransporterThread();
 					agent.transport.stop();
 				} catch (Exception e) {
 
@@ -63,6 +74,59 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 
 		instrumentation.addTransformer(agent);
 
+	}
+
+	private boolean initUserTags() {
+
+		String tags = (String) props.getProperty("agent.userEventTags", "");
+		userTags = new HashMap<String, String>();
+
+		StringTokenizer st = new StringTokenizer(tags, ",");
+		while (st.hasMoreTokens()) {
+			String item = st.nextToken();
+			StringTokenizer st2 = new StringTokenizer(item, "=");
+			String key = st2.nextToken();
+			String value = st2.nextToken();
+			userTags.put(key, value);
+
+		}
+
+		return true;
+	}
+
+	class TransporterThread extends Thread {
+
+		boolean stopped = false;
+		Thread parent;
+
+		TransporterThread(Thread parent) {
+			this.parent = parent;
+		}
+
+		public void run() {
+
+			while (!stopped && parent.isAlive()) {
+
+				while (!agent.eventQueue.isEmpty()) {
+					SplunkLogEvent event = agent.eventQueue.poll();
+
+					if (event != null) {
+						agent.transport.send(event);
+					}
+				}
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+
+				}
+			}
+		}
+
+		public void stopTransporterThread() {
+
+			this.stopped = true;
+
+		}
 	}
 
 	private boolean initFilters() {
@@ -179,6 +243,8 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 		try {
 			transport.init(args);
 			transport.start();
+			transporterThread = new TransporterThread(Thread.currentThread());
+			transporterThread.start();
 
 		} catch (Exception e) {
 
@@ -239,9 +305,9 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 
 		classLoaded(className);
 		ClassReader cr = new ClassReader(classFileBuffer);
-		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
 		ClassTracerAdaptor ca = new ClassTracerAdaptor(cw);
-		cr.accept(ca, 8);
+		cr.accept(ca, ClassReader.SKIP_FRAMES);
 		return cw.toByteArray();
 
 	}
@@ -254,27 +320,48 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 			event.addPair("appName", agent.appName);
 			event.addPair("appID", agent.appID);
 			event.addPair("className", className);
+			addUserTags(event);
 			agent.transport.send(event);
 		}
 	}
 
-	public static void methodEntered(String className, String methodName) {
+	private static void addUserTags(SplunkLogEvent event) {
+
+		if (!agent.userTags.isEmpty()) {
+
+			Set<String> keys = agent.userTags.keySet();
+			for (String key : keys) {
+				event.addPair(key, agent.userTags.get(key));
+			}
+		}
+
+	}
+
+	public static void methodEntered(String className, String methodName,
+			String desc) {
 
 		if (agent.traceMethodEntered) {
 			SplunkLogEvent event = new SplunkLogEvent("method_entered",
 					"splunkagent", true, false);
 			event.addPair("appName", agent.appName);
 			event.addPair("appID", agent.appID);
-			// event.addPair("nanoTime", System.nanoTime());
 			event.addPair("className", className);
 			event.addPair("methodName", methodName);
+			event.addPair("methodDesc", desc);
 			event.addPair("threadID", Thread.currentThread().getId());
 			event.addPair("threadName", Thread.currentThread().getName());
-			agent.transport.send(event);
+			addUserTags(event);
+			try {
+				agent.eventQueue.put(event);
+				// agent.eventQueue.offer(event,1000,TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+
+			}
 		}
 	}
 
-	public static void methodExited(String className, String methodName) {
+	public static void methodExited(String className, String methodName,
+			String desc) {
 
 		if (agent.traceMethodExited) {
 
@@ -282,16 +369,23 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 					"splunkagent", true, false);
 			event.addPair("appName", agent.appName);
 			event.addPair("appID", agent.appID);
-			// event.addPair("nanoTime", System.nanoTime());
 			event.addPair("className", className);
 			event.addPair("methodName", methodName);
+			event.addPair("methodDesc", desc);
 			event.addPair("threadID", Thread.currentThread().getId());
 			event.addPair("threadName", Thread.currentThread().getName());
-			agent.transport.send(event);
+			addUserTags(event);
+			try {
+				agent.eventQueue.put(event);
+				// agent.eventQueue.offer(event,1000,TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+
+			}
 		}
 	}
 
-	public static void throwableCaught(String className, String methodName) {
+	public static void throwableCaught(String className, String methodName,
+			String desc, Throwable t) {
 
 		if (agent.traceErrors) {
 
@@ -301,9 +395,20 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 			event.addPair("appID", agent.appID);
 			event.addPair("className", className);
 			event.addPair("methodName", methodName);
+			event.addPair("methodDesc", desc);
+			event.addPair("throwableType", t.getClass().getCanonicalName());
+			event.addPair("throwableMessage", t.getMessage());
+			event.addPair("methodName", methodName);
 			event.addPair("threadID", Thread.currentThread().getId());
 			event.addPair("threadName", Thread.currentThread().getName());
-			agent.transport.send(event);
+			addUserTags(event);
+			try {
+				agent.eventQueue.put(event);
+				// agent.eventQueue.offer(event,1000,TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+
+			}
+
 		}
 	}
 

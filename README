@@ -7,10 +7,23 @@ ddallimore@splunk.com
 Overview
 --------
 
-This agent can be used to obtain metrics pertaining to class loading/usage, method execution, method timings and method call tracing.
+This JVM(Java Virtual Machine )agent can be used to obtain metrics pertaining to :
+
+* class loading
+* method execution
+* method timings
+* method call tracing
+* application stalls
+* errors/exceptions/throwables
+
 It is able to obtain these metrics dynamically at runtime by "weaving" the necessary bytecode into loaded classes using the Java instrumentation API and the ASM framework.
 There is no source code changes required by the end user and no class files on disk are altered.
 By default , the metrics will be streamed directly into Splunk over TCP, however the transport mechanism is configurable and extensible.
+
+In the Splunk UI you can then create Splunk searches over the agent data and visualizations, reports,alerts etc.. over the results of the searches.
+The events are already being fed into Splunk in best practice semantic format, key=value pairs , no additional field extractions are required.
+As Splunk is being using to index all the data and perform searches(real time if you wish) massive amounts of tracing data from as many JVMs as you need to monitor can be indexed and correlated and you can leverage all of the scalablity and HA features of the Splunk platform.
+
 
 Supported Java Runtime
 ----------------------
@@ -41,7 +54,15 @@ The location of the jar file should be relative to the directory where you are e
 
 All dependencies and resources are bundled into the jar file.
 
+Configuration
+-------------
+
 You can configure the agent with the properties file "splunkagent.properties" that resides inside the jar file.
+The various options are detailed below.
+Open the jar , edit the file, close the jar.
+
+Note : unless you want incredibly verbose tracing , you will want to specify just the packages/classes/methods you are interested in profiling in the "agent.whitelist" property
+
 
 Properties Options
 ------------------
@@ -59,6 +80,7 @@ trace.methodEntered : true | false
 trace.methodExited : true | false
 trace.classLoaded : true | false
 trace.errors : true | false
+agent.userEventTags : comma delimited list of user defined key=value pairs to add to events sent to Splunk
 
 Whitelist/Blacklist Patterns
 ----------------------------

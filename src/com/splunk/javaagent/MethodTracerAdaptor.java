@@ -2,31 +2,36 @@ package com.splunk.javaagent;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.AdviceAdapter;
 
-public class MethodTracerAdaptor extends MethodVisitor {
+public class MethodTracerAdaptor extends AdviceAdapter {
 
 	private String cName;
 	private String mName;
+	private String desc;
 
-	public MethodTracerAdaptor(String owner, String name, MethodVisitor mv) {
+	public MethodTracerAdaptor(String owner, String name, MethodVisitor mv,
+			String desc, int access) {
 
-		super(Opcodes.ASM4, mv);
-
+		super(Opcodes.ASM4, mv, access, name, desc);
 		this.mName = name;
 		this.mv = mv;
 		this.cName = owner;
+		this.desc = desc;
 
 	}
 
 	@Override
 	public void visitCode() {
 		try {
-			mv.visitCode();
-			mv.visitLdcInsn(cName);
-			mv.visitLdcInsn(mName);
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC,
+			super.visitCode();
+			super.visitLdcInsn(cName);
+			super.visitLdcInsn(mName);
+			super.visitLdcInsn(desc);
+			super.visitMethodInsn(Opcodes.INVOKESTATIC,
 					"com/splunk/javaagent/SplunkJavaAgent", "methodEntered",
-					"(Ljava/lang/String;Ljava/lang/String;)V");
+					"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 		} catch (Exception e) {
 		}
 	}
@@ -37,26 +42,37 @@ public class MethodTracerAdaptor extends MethodVisitor {
 		try {
 
 			if (opcode == Opcodes.ATHROW) {
-				mv.visitLdcInsn(cName);
-				mv.visitLdcInsn(mName);
-				mv.visitMethodInsn(Opcodes.INVOKESTATIC,
+				// get the Throwable object off the stack
+				super.visitInsn(Opcodes.DUP);
+
+				int exceptionVar = newLocal(Type.getType(Throwable.class));
+				super.visitVarInsn(Opcodes.ASTORE, exceptionVar);
+
+				super.visitLdcInsn(cName);
+				super.visitLdcInsn(mName);
+				super.visitLdcInsn(desc);
+				super.visitVarInsn(ALOAD, exceptionVar);
+
+				super.visitMethodInsn(
+						Opcodes.INVOKESTATIC,
 						"com/splunk/javaagent/SplunkJavaAgent",
 						"throwableCaught",
-						"(Ljava/lang/String;Ljava/lang/String;)V");
+						"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V");
 			}
 
 			if (opcode == Opcodes.IRETURN || opcode == Opcodes.FRETURN
 					|| opcode == Opcodes.RETURN || opcode == Opcodes.ARETURN
 					|| opcode == Opcodes.LRETURN || opcode == Opcodes.DRETURN) {
 
-				mv.visitLdcInsn(cName);
-				mv.visitLdcInsn(mName);
-				mv.visitMethodInsn(Opcodes.INVOKESTATIC,
+				super.visitLdcInsn(cName);
+				super.visitLdcInsn(mName);
+				super.visitLdcInsn(desc);
+				super.visitMethodInsn(Opcodes.INVOKESTATIC,
 						"com/splunk/javaagent/SplunkJavaAgent", "methodExited",
-						"(Ljava/lang/String;Ljava/lang/String;)V");
+						"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 			}
 
-			mv.visitInsn(opcode);
+			super.visitInsn(opcode);
 
 		} catch (Exception e) {
 		}
@@ -64,6 +80,9 @@ public class MethodTracerAdaptor extends MethodVisitor {
 
 	@Override
 	public void visitMaxs(int maxStack, int maxLocals) {
-		mv.visitMaxs(maxStack + 4, maxLocals);
+
+		// will be overridden by COMPUTE_MAXS
+		super.visitMaxs(0, 0);
+
 	}
 }
