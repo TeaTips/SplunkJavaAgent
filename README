@@ -22,7 +22,7 @@ By default , the metrics will be streamed directly into Splunk over TCP, however
 
 In the Splunk UI you can then create Splunk searches over the agent data and visualizations, reports,alerts etc.. over the results of the searches.
 The events are already being fed into Splunk in best practice semantic format, key=value pairs , no additional field extractions are required.
-As Splunk is being using to index all the data and perform searches(real time if you wish) massive amounts of tracing data from as many JVMs as you need to monitor can be indexed and correlated and you can leverage all of the scalablity and HA features of the Splunk platform.
+As Splunk is being using to index all the data and perform searches(real time if you wish) massive amounts of tracing data from as many JVMs as you need to monitor can be indexed and correlated and you can leverage all of the scalability and HA features of the Splunk platform.
 
 
 Supported Java Runtime
