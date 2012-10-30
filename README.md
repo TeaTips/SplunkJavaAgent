@@ -11,7 +11,7 @@ This JVM(Java Virtual Machine)agent can be used to obtain metrics pertaining to 
 4. method call tracing(count of calls, group by app/app node(for clustered systems)/thread/clqss/package)
 5. application/thread stalls
 6. errors/exceptions/throwables
-7. JVM heap analysis, object allocation count/size, leak detection
+7. JVM heap analysis, object allocation count/size, leak detection   (COMING SOON !!)
 
 It is able to obtain these metrics dynamically at runtime by "weaving" the necessary bytecode into loaded classes using the Java instrumentation API and the ASM framework.
 There is no source code changes required by the end user and no class files on disk are altered.
