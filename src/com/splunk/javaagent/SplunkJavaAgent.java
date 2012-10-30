@@ -260,8 +260,8 @@ public class SplunkJavaAgent implements ClassFileTransformer {
 				.getSystemResourceAsStream("splunkagent.properties");
 		try {
 			props.load(in);
-			this.appName = props.getProperty("app.name", "");
-			this.appID = props.getProperty("app.instance", "");
+			this.appName = props.getProperty("agent.app.name", "");
+			this.appID = props.getProperty("agent.app.instance", "");
 			this.traceClassLoaded = Boolean.parseBoolean(agent.props
 					.getProperty("trace.classLoaded", "true"));
 			this.traceMethodEntered = Boolean.parseBoolean(agent.props
