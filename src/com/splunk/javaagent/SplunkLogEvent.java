@@ -1,6 +1,5 @@
 package com.splunk.javaagent;
 
-import java.util.Date;
 
 /**
  * <pre>
