@@ -1,0 +1,231 @@
+<?xml version="1.0"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
+                         "http://castor.org/mapping.dtd">
+
+<mapping>
+
+	<class name="com.splunk.javaagent.jmx.config.JMXPoller">
+		<map-to xml="jmxpoller" />
+
+		
+		<field name="servers" type="com.splunk.javaagent.jmx.config.JMXServer"
+			collection="arraylist">
+			<bind-xml name="jmxserver" />
+		</field>
+		
+		<field name="clusters" type="com.splunk.javaagent.jmx.config.Cluster"
+			collection="arraylist">
+			<bind-xml name="cluster" />
+		</field>
+		
+		<field name="formatter" type="com.splunk.javaagent.jmx.config.Formatter">
+			<bind-xml name="formatter" />
+		</field>
+		
+		<field name="transport" type="com.splunk.javaagent.jmx.config.Transport">
+			<bind-xml name="transport" />
+		</field>
+
+	</class>
+	
+	<class name="com.splunk.javaagent.jmx.config.Cluster">
+		<map-to xml="cluster" />
+		
+		<field name="name" type="java.lang.String">
+			<bind-xml name="name" node="attribute" />
+		</field>
+		
+		<field name="description" type="java.lang.String">
+			<bind-xml name="description" node="attribute" />
+		</field>
+		
+		<field name="mbeans" type="com.splunk.javaagent.jmx.config.MBean"
+			collection="arraylist">
+			<bind-xml name="mbean" />
+		</field>
+		
+		<field name="servers" type="com.splunk.javaagent.jmx.config.JMXServer"
+			collection="arraylist">
+			<bind-xml name="jmxserver" />
+		</field>
+		
+	</class>
+
+	<class name="com.splunk.javaagent.jmx.config.JMXServer">
+		<map-to xml="jmxserver" />
+
+
+        <field name="processID" type="integer">
+			<bind-xml name="pid" node="attribute" />
+		</field>
+
+		<field name="pidFile" type="java.lang.String">
+			<bind-xml name="pidFile" node="attribute" />
+		</field>
+		
+		<field name="pidCommand" type="java.lang.String">
+			<bind-xml name="pidCommand" node="attribute" />
+		</field>
+
+        <field name="host" type="java.lang.String">
+			<bind-xml name="host" node="attribute" />
+		</field>
+
+		<field name="jvmDescription" type="java.lang.String">
+			<bind-xml name="jvmDescription" node="attribute" />
+		</field>
+
+		<field name="jmxuser" type="java.lang.String">
+			<bind-xml name="jmxuser" node="attribute" />
+		</field>
+
+		<field name="jmxpass" type="java.lang.String">
+			<bind-xml name="jmxpass" node="attribute" />
+		</field>
+		
+		<field name="protocol" type="java.lang.String">
+			<bind-xml name="protocol" node="attribute" />
+		</field>
+		
+		<field name="lookupPath" type="java.lang.String">
+			<bind-xml name="lookupPath" node="attribute" />
+		</field>
+		
+		<field name="stubSource" type="java.lang.String">
+			<bind-xml name="stubSource" node="attribute" />
+		</field>
+		
+		<field name="encodedStub" type="java.lang.String">
+			<bind-xml name="encodedStub" node="attribute" />
+		</field>
+		
+		<field name="jmxServiceURL" type="java.lang.String">
+			<bind-xml name="jmxServiceURL" node="attribute" />
+		</field>
+
+        <field name="jmxport" type="integer">
+			<bind-xml name="jmxport" node="attribute" />
+		</field>
+
+		<field name="mbeans" type="com.splunk.javaagent.jmx.config.MBean"
+			collection="arraylist">
+			<bind-xml name="mbean" />
+		</field>
+
+	</class>
+
+
+    <class name="com.splunk.javaagent.jmx.config.MBean">
+		<map-to xml="mbean" />
+
+        <field name="domain" type="java.lang.String">
+			<bind-xml name="domain" node="attribute" />
+		</field>
+
+		<field name="propertiesList" type="java.lang.String">
+			<bind-xml name="properties" node="attribute" />
+		</field>
+
+        <field name="dumpAllAttributes" type="boolean">
+			<bind-xml name="dumpAllAttributes" node="attribute" />
+		</field>
+		
+
+		<field name="attributes" type="com.splunk.javaagent.jmx.config.Attribute"
+			collection="arraylist">
+			<bind-xml name="attribute" />
+		</field>
+		
+		<field name="operations" type="com.splunk.javaagent.jmx.config.Operation"
+			collection="arraylist">
+			<bind-xml name="operation" />
+		</field>
+		
+		
+		<field name="notification" type="com.splunk.javaagent.jmx.config.Notification">
+			<bind-xml name="notificationListener" />
+		</field>
+
+	</class>
+
+    <class name="com.splunk.javaagent.jmx.config.Notification">
+		<map-to xml="notificationListener" />
+
+        <field name="filterImplementationClass" type="java.lang.String">
+			<bind-xml name="filterImplementationClass" node="attribute" />
+		</field>
+
+
+
+	</class>
+    
+	<class name="com.splunk.javaagent.jmx.config.Attribute">
+		<map-to xml="attribute" />
+
+        <field name="name" type="java.lang.String">
+			<bind-xml name="name" node="attribute" />
+		</field>
+
+		<field name="outputname" type="java.lang.String">
+			<bind-xml name="outputname" node="attribute" />
+		</field>
+
+	</class>
+	
+	<class name="com.splunk.javaagent.jmx.config.Operation">
+		<map-to xml="operation" />
+
+        <field name="name" type="java.lang.String">
+			<bind-xml name="name" node="attribute" />
+		</field>
+
+		<field name="outputname" type="java.lang.String">
+			<bind-xml name="outputname" node="attribute" />
+		</field>
+		
+		<field name="parameters" type="com.splunk.javaagent.jmx.config.Parameter"
+			collection="arraylist">
+			<bind-xml name="parameter" />
+		</field>
+
+	</class>
+
+    <class name="com.splunk.javaagent.jmx.config.Formatter">
+		<map-to xml="formatter" />
+
+        <field name="className" type="java.lang.String">
+			<bind-xml name="className" node="attribute" />
+		</field>
+		
+		<field name="parameters" collection="hashtable">
+			<bind-xml name="param" />
+		</field>
+
+	</class>
+	
+	<class name="com.splunk.javaagent.jmx.config.Transport">
+		<map-to xml="transport" />
+
+        <field name="className" type="java.lang.String">
+			<bind-xml name="className" node="attribute" />
+		</field>
+		
+		<field name="parameters" collection="hashtable">
+			<bind-xml name="param" />
+		</field>
+
+	</class>
+	
+	<class name="org.exolab.castor.mapping.MapItem">
+		<map-to xml="param" />
+
+        <field name="key" type="java.lang.String">
+			<bind-xml name="name" node="attribute" />
+		</field>
+		<field name="value" type="java.lang.String">
+			<bind-xml name="value" node="attribute" />
+		</field>
+
+	</class>
+	
+</mapping>

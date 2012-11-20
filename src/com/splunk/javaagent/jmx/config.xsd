@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+	<xs:element name="jmxpoller">
+		<xs:annotation>
+			<xs:documentation>
+				Root element of the configuration file.
+				This configuration file is where you specify local and remote JMX
+				servers to connect to across
+				your enterprise and extract whatever MBean attributes you have declared
+				to query.
+				The result will then be written to STDOUT for SPLUNK indexing.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>			
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="1" ref="formatter" />
+				<xs:element minOccurs="0" maxOccurs="1" ref="transport" />
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cluster" />
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="jmxserver" />				
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="formatter">
+		<xs:annotation>
+			<xs:documentation>Custom formatter declaration</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+		<xs:sequence>
+
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="param" />
+			</xs:sequence>
+			<xs:attribute name="className" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Fully qualified Java class name of the formatter
+						implementation, implements the
+						com.dtdsoftware.splunk.formatter.Formatter interface
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="transport">
+		<xs:annotation>
+			<xs:documentation>Custom transport declaration</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+		<xs:sequence>
+
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="param" />
+			</xs:sequence>
+			<xs:attribute name="className" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Fully qualified Java class name of the transport
+						implementation, implements the
+						com.dtdsoftware.splunk.transport.Transport interface
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="cluster">
+		<xs:annotation>
+			<xs:documentation>
+				For JVMs with the same MBeans, you can group them
+				under this element so
+				you only have to declare the common beans to
+				query once.
+				You can still declare additional mbeans specfic to each
+				jmxserver
+				within the jmxserver elements.
+    </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="mbean" />
+				<xs:element maxOccurs="unbounded" ref="jmxserver" />
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Name for this cluster</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="description" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Description of this cluster</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="jmxserver">
+		<xs:annotation>
+			<xs:documentation>A local or remote JMX Server to connect to
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="mbean" />
+			</xs:sequence>
+			<xs:attribute name="host" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>IP Address, Hostname or DNS Alias.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="jmxpass" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>JMX Password
+			</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="jmxport" type="xs:integer">
+				<xs:annotation>
+					<xs:documentation>JMX Port
+			</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="jmxuser" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>JMX Username
+			</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="protocol">
+				<xs:annotation>
+					<xs:documentation>
+						The service protocol to use.Will default to "rmi".
+						Note : the "local", "soap", "hessian" and "burlap" protocols require MX4J to be used as the JMX 
+						implementation at both the client and server endss of the connection.					
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="rmi" />
+						<xs:enumeration value="iiop" />
+						<xs:enumeration value="local" />
+						<xs:enumeration value="soap" />
+						<xs:enumeration value="hessian" />
+						<xs:enumeration value="burlap" />
+						<xs:enumeration value="soap+ssl" />
+						<xs:enumeration value="hessian+ssl" />
+						<xs:enumeration value="burlap+ssl" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="lookupPath" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The url path of the service.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="stubSource">
+				<xs:annotation>
+					<xs:documentation>The source of the remote stub.Will default to "jndi"</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="jndi" />
+						<xs:enumeration value="stub" />
+						<xs:enumeration value="ior" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="encodedStub" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Base64 encoded stub value for stubSource types of "ior" and "stub"
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="jmxServiceURL" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>
+						A raw jmx service url in format "service:jmx:protocol:sap"
+						ie: service:jmx:rmi:///jndi/rmi://myhost:9909/jmxrmi
+						If set will take precedence over other parameters
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="jvmDescription" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>A description of this JVM
+			</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="pid" type="xs:integer">
+				<xs:annotation>
+					<xs:documentation>Process ID for attaching directly to a locally
+						running JVM
+			</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="pidFile" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>File containing the Process ID for attaching
+						directly to a locally running JVM.The only file contents should
+						be the PID on the first line of the file.
+			</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="pidCommand" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Command/Script that outputs to STDOUT the Process ID for
+						attaching directly to a locally running JVM
+			</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="mbean">
+		<xs:annotation>
+			<xs:documentation>
+				An MBean to query
+				Standard JMX object name wildcard
+				patterns * and ? are supported
+				If no values are specified for the
+				"domain" and "properties"
+				attributes , the value will default to the
+				* wildcard
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>		
+			<xs:sequence>
+			    <xs:element minOccurs="0" maxOccurs="1" ref="notificationListener" />
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="operation" />
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="attribute" />
+			</xs:sequence>	
+			<xs:attribute name="domain" use="required" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The MBean domain</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="properties" use="required" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The MBean properties string in
+						"key=value,key2=value2" format</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="dumpAllAttributes" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>If set to true will dump all of the attributes of the mbean.
+					Use as an alternative to explicitly declaring each individual attribute to extract.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>	
+	<xs:element name="notificationListener">
+		<xs:annotation>
+			<xs:documentation>An MBean notification listener</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			
+			<xs:attribute name="filterImplementationClass"  type="xs:string">
+				<xs:annotation>
+					<xs:documentation>
+						The canonical name of a class implementing the javax.management.NotificationFilter interface
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="operation">
+		<xs:annotation>
+			<xs:documentation>An MBean operation</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="parameter" />
+			</xs:sequence>
+			<xs:attribute name="name" use="required" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>
+						The operation name.
+						For overloaded operations, the operation signature is inferred from the paramaters list.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="outputname" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The operation result key that is output to STDOUT for
+						SPLUNK indexing.Optional, some operations may not return values.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parameter">
+		<xs:annotation>
+			<xs:documentation>An MBean operation parameter</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="value" use="required" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>
+						The parameter value
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="type" use="required">
+				<xs:annotation>
+					<xs:documentation>The parameter type</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="int" />
+						<xs:enumeration value="byte" />
+						<xs:enumeration value="short" />
+						<xs:enumeration value="long" />
+						<xs:enumeration value="float" />
+						<xs:enumeration value="double" />
+						<xs:enumeration value="boolean" />
+						<xs:enumeration value="char" />
+						<xs:enumeration value="string" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="attribute">
+		<xs:annotation>
+			<xs:documentation>An MBean attribute</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="name" use="required" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>
+						The attribute name
+						For attributes that are multi
+						level ie: composite and tabular
+						attributes , then you can use a ":"
+						delimited notation for
+						specifying the attribute name.
+						ie:
+						foo:goo:myattribute
+    </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="outputname" use="required" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The attribute key that is output to STDOUT for
+						SPLUNK indexing</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="param">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">parameters for a ParameterizedConfig object</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="name" use="required" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">parameter name
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="value" use="required" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">parameter value
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+
+
+
+	</xs:element>
+</xs:schema>
