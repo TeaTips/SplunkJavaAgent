@@ -1,0 +1,177 @@
+<jmxpoller>
+
+<jmxserver>
+
+<!-- Example of config to listen for an MBean's notifications
+<mbean domain="somedomain" properties="someproperty=foo">
+
+<notificationListener />
+
+</mbean>
+
+-->
+
+    
+<mbean domain="java.lang" properties="type=Threading">
+ 
+<attribute name="TotalStartedThreadCount" outputname="started"/>
+<attribute name="ThreadCpuTimeSupported" outputname="cpuTimeSupported"/>
+<attribute name="ThreadCpuTimeEnabled" outputname="cpuTimeEnabled"/>
+<attribute name="ThreadCount" outputname="count"/>
+<attribute name="ThreadContentionMonitoringSupported" outputname="cmSupported"/>
+<attribute name="ThreadContentionMonitoringEnabled" outputname="cmEnabled"/>
+<attribute name="SynchronizerUsageSupported" outputname="synchSupported"/>
+<attribute name="PeakThreadCount" outputname="peak"/>
+<attribute name="ObjectMonitorUsageSupported" outputname="omuSupported"/>
+<attribute name="DaemonThreadCount" outputname="daemonCount"/>
+<attribute name="CurrentThreadUserTime" outputname="currentUserTime"/>
+<attribute name="CurrentThreadCpuTimeSupported" outputname="cpuTimeSupported"/>
+<attribute name="CurrentThreadCpuTime" outputname="currentCPUTime"/>
+
+</mbean>
+
+
+<mbean domain="java.lang" properties="type=Runtime">
+
+<attribute name="SystemProperties:user.timezone:value" outputname="timezone"/>
+<attribute name="SystemProperties:java.vm.vendor:value" outputname="jvmVendor"/>
+<attribute name="VmVersion" outputname="jvmVersion"/>
+<attribute name="VmVendor" outputname="jvmVendor"/>
+<attribute name="VmName" outputname="jvmName"/>
+<attribute name="Uptime" outputname="jvmUptime"/>
+<attribute name="StartTime" outputname="startedAt"/>
+<attribute name="Name" outputname="jvmProcessName"/>
+<attribute name="InputArguments" outputname="inputArgs"/>
+
+</mbean>
+
+
+<mbean domain="java.lang" properties="type=OperatingSystem">
+
+<attribute name="Version" outputname="version"/>
+<attribute name="TotalSwapSpaceSize" outputname="swapSpace"/>
+<attribute name="TotalPhysicalMemorySize" outputname="physMem"/>
+<attribute name="SystemLoadAverage" outputname="sysLoad"/>
+<attribute name="ProcessCpuTime" outputname="cpuTime"/>
+<attribute name="OpenFileDescriptorCount" outputname="openFD"/>
+<attribute name="Name" outputname="name"/>
+<attribute name="MaxFileDescriptorCount" outputname="maxFD"/>
+<attribute name="FreeSwapSpaceSize" outputname="freeSwap"/>
+<attribute name="FreePhysicalMemorySize" outputname="freePhysMem"/>
+<attribute name="CommittedVirtualMemorySize" outputname="committed"/>
+<attribute name="AvailableProcessors" outputname="processors"/>
+<attribute name="Arch" outputname="arch"/>
+
+</mbean>
+
+<mbean domain="java.lang" properties="type=Compilation">
+
+<attribute name="TotalCompilationTime" outputname="time"/>
+
+</mbean>
+
+<mbean domain="java.lang" properties="type=ClassLoading">
+
+<attribute name="TotalLoadedClassCount" outputname="total"/>
+<attribute name="LoadedClassCount" outputname="current"/>
+<attribute name="UnloadedClassCount" outputname="unloaded"/>
+
+</mbean>
+
+
+<mbean domain="java.lang" properties="type=Memory">
+
+<attribute name="NonHeapMemoryUsage:used" outputname="nonHeapUsed"/>
+<attribute name="NonHeapMemoryUsage:max" outputname="nonHeapMax"/>
+<attribute name="NonHeapMemoryUsage:init" outputname="nonHeapInit"/>
+<attribute name="NonHeapMemoryUsage:committed" outputname="nonHeapCommitted"/>
+<attribute name="HeapMemoryUsage:used" outputname="heapUsed"/>
+<attribute name="HeapMemoryUsage:max" outputname="heapMax"/>
+<attribute name="HeapMemoryUsage:init" outputname="heapInit"/>
+<attribute name="HeapMemoryUsage:committed" outputname="heapCommitted"/>
+<attribute name="ObjectPendingFinalizationCount" outputname="objectsPending"/>
+
+</mbean>
+
+
+<mbean domain="java.lang" properties="type=MemoryPool,name=*">
+
+<attribute name="Name" outputname="name"/>
+<attribute name="Type" outputname="memoryType"/>
+<attribute name="MemoryManagerNames" outputname="memManagerNames"/>
+<attribute name="PeakUsage:used" outputname="peakUsageUsed"/>
+<attribute name="PeakUsage:max" outputname="peakUsageMax"/>
+<attribute name="PeakUsage:committed" outputname="peakUsageCommitted"/>
+<attribute name="PeakUsage:init" outputname="peakUsageInit"/>
+<attribute name="CollectionUsage:used" outputname="colUsageUsed"/>
+<attribute name="CollectionUsage:max" outputname="colUsageMax"/>
+<attribute name="CollectionUsage:committed" outputname="colUsageCommitted"/>
+<attribute name="CollectionUsage:init" outputname="colUsageInit"/>
+<attribute name="Usage:used" outputname="usageUsed"/>
+<attribute name="Usage:max" outputname="usageMax"/>
+<attribute name="Usage:committed" outputname="usageCommitted"/>
+<attribute name="Usage:init" outputname="usageInit"/>
+
+</mbean>
+
+
+
+<mbean domain="java.lang" properties="type=GarbageCollector,name=*">
+
+
+<attribute name="Name" outputname="gcName"/>
+<attribute name="MemoryPoolNames" outputname="memPools"/>
+<attribute name="CollectionTime" outputname="colTime"/>
+<attribute name="CollectionCount" outputname="colCount"/>
+<attribute name="LastGcInfo:startTime" outputname="gCStart"/>
+<attribute name="LastGcInfo:endTime" outputname="gCEnd"/>
+<attribute name="LastGcInfo:id" outputname="gCID"/>
+<attribute name="LastGcInfo:duration" outputname="gCDuration"/>
+<attribute name="LastGcInfo:GcThreadCount" outputname="gCThreadCount"/>
+
+
+<!-- 
+Detailed GC Info for the various heap and non-heap memory pools.
+
+I've included an example of extracting "Eden Space" & "Survivor Space"  attributes for HOTSPOT JVM with default GC setup, its just a copy paste exercise for the other pools
+
+Perm Gen
+Perm Gen [shared-ro]
+Perm Gen [shared-rw]
+Eden Space
+Survivor Space
+Tenured Gen
+
+etc...
+
+
+Based on which GC collector and policy you use and which JVM, these memory pool names may differ.
+
+
+<attribute name="LastGcInfo:memoryUsageBeforeGc:Eden Space:value:used" outputname="eden_beforeGCUsed"/>
+<attribute name="LastGcInfo:memoryUsageBeforeGc:Eden Space:value:max" outputname="eden_beforeGCMax"/>
+<attribute name="LastGcInfo:memoryUsageBeforeGc:Eden Space:value:init" outputname="eden_beforeGCInit"/>
+<attribute name="LastGcInfo:memoryUsageBeforeGc:Eden Space:value:committed" outputname="eden_beforeGCCommitted"/>
+
+<attribute name="LastGcInfo:memoryUsageAfterGc:Eden Space:value:used" outputname="eden_afterGCUsed"/>
+<attribute name="LastGcInfo:memoryUsageAfterGc:Eden Space:value:max" outputname="eden_afterGCMax"/>
+<attribute name="LastGcInfo:memoryUsageAfterGc:Eden Space:value:init" outputname="eden_afterGCInit"/>
+<attribute name="LastGcInfo:memoryUsageAfterGc:Eden Space:value:committed" outputname="eden_afterGCCommitted"/>
+
+<attribute name="LastGcInfo:memoryUsageBeforeGc:Survivor Space:value:used" outputname="survivor_beforeGCUsed"/>
+<attribute name="LastGcInfo:memoryUsageBeforeGc:Survivor Space:value:max" outputname="survivor_beforeGCMax"/>
+<attribute name="LastGcInfo:memoryUsageBeforeGc:Survivor Space:value:init" outputname="survivor_beforeGCInit"/>
+<attribute name="LastGcInfo:memoryUsageBeforeGc:Survivor Space:value:committed" outputname="survivor_beforeGCCommitted"/>
+
+<attribute name="LastGcInfo:memoryUsageAfterGc:Survivor Space:value:used" outputname="survivor_afterGCUsed"/>
+<attribute name="LastGcInfo:memoryUsageAfterGc:Survivor Space:value:max" outputname="survivor_afterGCMax"/>
+<attribute name="LastGcInfo:memoryUsageAfterGc:Survivor Space:value:init" outputname="survivor_afterGCInit"/>
+<attribute name="LastGcInfo:memoryUsageAfterGc:Survivor Space:value:committed" outputname="survivor_afterGCCommitted"/>
+-->
+
+</mbean>
+
+</jmxserver>
+
+
+</jmxpoller>
