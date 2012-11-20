@@ -1,4 +1,4 @@
-## Splunk Java Agent v0.1
+## Splunk Java Agent v0.3
 
 ## Overview
 
