@@ -3,7 +3,6 @@ package com.splunk.javaagent.jmx.formatter;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import com.splunk.javaagent.SplunkLogEvent;
 
