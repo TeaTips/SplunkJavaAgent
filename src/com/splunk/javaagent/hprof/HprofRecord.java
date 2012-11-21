@@ -18,7 +18,6 @@ public abstract class HprofRecord {
 	public static final byte RECORD_END_THREAD = 11;
 	public static final byte RECORD_CPU_SAMPLES = 13;
 	public static final byte RECORD_CONTROL_SETTINGS = 14;
-
 	public static final byte RECORD_HEAP_DUMP = 12;
 	public static final byte RECORD_HEAPDUMP_SEGMENT_START = 28;
 	public static final byte RECORD_HEAPDUMP_SEGMENT_END = 44;
@@ -53,6 +52,7 @@ public abstract class HprofRecord {
 	int recordlength;
 	HprofDump parent;
 	MappedByteBuffer buf;
+	boolean includeHeaderSize = true;
 
 	public abstract void parseRecord();
 
@@ -65,24 +65,48 @@ public abstract class HprofRecord {
 
 		switch (tag) {
 
-		case RECORD_UTF8:record = new UTF8Record();break;
-		case RECORD_LOAD_CLASS:record = new LoadClassRecord();break;
-		case RECORD_UNLOAD_CLASS:record = new UnloadClassRecord();break;
-		case RECORD_FRAME:record = new FrameRecord();break;		
-		case RECORD_TRACE:record = new TraceRecord();break;		
-		case RECORD_ALLOC_SITES:record = new AllocSitesRecord();break;		
-		case RECORD_HEAP_SUMMARY:record = new HeapSummaryRecord();break;
-		case RECORD_START_THREAD:record = new StartThreadRecord();break;
-		case RECORD_END_THREAD:record = new EndThreadRecord();break;		
-		case RECORD_CPU_SAMPLES:record = new CPUSamplesRecord();break;
-		case RECORD_CONTROL_SETTINGS:record = new ControlSettingsRecord();break;
-		
-		/**
-        case RECORD_HEAPDUMP_SEGMENT_START:record = new HeapDumpRecord();break;
-		case RECORD_HEAP_DUMP:record = new HeapDumpRecord();break;
-		**/
-		
-		case RECORD_HEAPDUMP_SEGMENT_END:break;
+		case RECORD_UTF8:
+			record = new UTF8Record();
+			break;
+		case RECORD_LOAD_CLASS:
+			record = new LoadClassRecord();
+			break;
+		case RECORD_UNLOAD_CLASS:
+			record = new UnloadClassRecord();
+			break;
+		case RECORD_FRAME:
+			record = new FrameRecord();
+			break;
+		case RECORD_TRACE:
+			record = new TraceRecord();
+			break;
+		case RECORD_ALLOC_SITES:
+			record = new AllocSitesRecord();
+			break;
+		case RECORD_HEAP_SUMMARY:
+			record = new HeapSummaryRecord();
+			break;
+		case RECORD_START_THREAD:
+			record = new StartThreadRecord();
+			break;
+		case RECORD_END_THREAD:
+			record = new EndThreadRecord();
+			break;
+		case RECORD_CPU_SAMPLES:
+			record = new CPUSamplesRecord();
+			break;
+		case RECORD_CONTROL_SETTINGS:
+			record = new ControlSettingsRecord();
+			break;
+		case RECORD_HEAPDUMP_SEGMENT_START:
+			record = new HeapDumpRecord();
+			break;
+		case RECORD_HEAP_DUMP:
+			record = new HeapDumpRecord();
+			break;
+
+		case RECORD_HEAPDUMP_SEGMENT_END:
+			break;
 
 		default:
 			byte unknown[] = new byte[recordLength];
@@ -135,22 +159,23 @@ public abstract class HprofRecord {
 	public long getRecordlength() {
 		return recordlength;
 	}
-	
-	protected void addCommonSplunkLogEventFields(SplunkLogEvent event){
+
+	protected void addCommonSplunkLogEventFields(SplunkLogEvent event) {
 		event.addPair("hprof_master_timestamp_millis", parent.getHeader()
 				.getTimestampMillis());
 		event.addPair("record_timestamp_offset_micros",
 				this.timeMicrosecondsSinceHeaderTimeStamp);
 	}
+
 	protected String toSplunkMVString(List items) {
-		
+
 		StringBuffer sb = new StringBuffer();
-		for(int i=0;i<items.size();i++){
+		for (int i = 0; i < items.size(); i++) {
 			sb.append(items.get(i).toString());
-			if(i<items.size()-1)
+			if (i < items.size() - 1)
 				sb.append(",");
 		}
-			
+
 		return sb.toString();
 	}
 

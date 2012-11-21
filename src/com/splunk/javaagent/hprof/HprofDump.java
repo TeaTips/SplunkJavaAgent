@@ -35,7 +35,7 @@ public class HprofDump {
 						hprofFile.length());
 
 				this.header = new HprofHeader(buf);
-				
+
 				while (buf.position() < buf.limit()) {
 
 					byte tag = buf.get();
@@ -45,8 +45,17 @@ public class HprofDump {
 					HprofRecord record = HprofRecord.create(this, tag,
 							elapsedTimeMicroSeconds, recordLength, buf);
 					if (record != null) {
-						SplunkJavaAgent.hprofRecordEvent(tag,
-								record.getSplunkLogEvent());
+						if (record instanceof HeapDumpRecord) {
+							for (HprofRecord subrecord : ((HeapDumpRecord) record)
+									.getSubRecords()) {
+								SplunkJavaAgent.hprofRecordEvent(tag,
+										subrecord.recordType,
+										subrecord.getSplunkLogEvent());
+							}
+						} else {
+							SplunkJavaAgent.hprofRecordEvent(tag, (byte) 0,
+									record.getSplunkLogEvent());
+						}
 
 					}
 				}

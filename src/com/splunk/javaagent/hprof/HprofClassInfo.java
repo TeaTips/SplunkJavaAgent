@@ -6,9 +6,9 @@ import java.util.List;
 
 public class HprofClassInfo {
 
-	public HprofClassInfo(long superid, int isize) {
+	public HprofClassInfo(long superid, int size) {
 		this.superid = superid;
-		this.isize = isize;
+		this.size = size;
 	}
 
 	public void addFieldSpec(HprofFieldSpec fs) {
@@ -20,7 +20,7 @@ public class HprofClassInfo {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append((new StringBuilder()).append("ClassInfo {")
-				.append(Long.toHexString(superid)).append(", ").append(isize)
+				.append(Long.toHexString(superid)).append(", ").append(size)
 				.append(", ").toString());
 		if (fieldSpec != null) {
 			Iterator i = fieldSpec.iterator();
@@ -37,6 +37,6 @@ public class HprofClassInfo {
 	}
 
 	long superid;
-	int isize;
+	int size;
 	List fieldSpec;
 }

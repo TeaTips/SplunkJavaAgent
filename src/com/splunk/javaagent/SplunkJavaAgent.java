@@ -21,7 +21,7 @@ import com.splunk.javaagent.trace.FilterListItem;
 import com.splunk.javaagent.trace.SplunkClassFileTransformer;
 import com.splunk.javaagent.transport.SplunkTransport;
 
-public class SplunkJavaAgent{
+public class SplunkJavaAgent {
 
 	private static SplunkJavaAgent agent;
 
@@ -37,6 +37,7 @@ public class SplunkJavaAgent{
 	private boolean traceHprof;
 	private Map<String, Integer> jmxConfigFiles;
 	private List<Byte> hprofRecordFilter;
+	private Map<Byte, List<Byte>> hprofHeapDumpSubRecordFilter;
 	private String hprofFile;
 	private int hprofFrequency = 600;// seconds
 	private Map<String, String> userTags;
@@ -85,7 +86,7 @@ public class SplunkJavaAgent{
 			});
 
 			instrumentation.addTransformer(new SplunkClassFileTransformer());
-			
+
 		} catch (Throwable t) {
 
 		}
@@ -122,10 +123,27 @@ public class SplunkJavaAgent{
 					"trace.hprof.recordtypes", "");
 			if (hprofRecordFilterString.length() >= 1) {
 				this.hprofRecordFilter = new ArrayList<Byte>();
+				this.hprofHeapDumpSubRecordFilter = new HashMap<Byte, List<Byte>>();
 				StringTokenizer st = new StringTokenizer(
 						hprofRecordFilterString, ",");
 				while (st.hasMoreTokens()) {
-					this.hprofRecordFilter.add(Byte.parseByte(st.nextToken()));
+					StringTokenizer st2 = new StringTokenizer(st.nextToken(),
+							":");
+
+					byte val = Byte.parseByte(st2.nextToken());
+					this.hprofRecordFilter.add(val);
+					// subrecords
+					if (st2.hasMoreTokens()) {
+						byte subVal = Byte.parseByte(st2.nextToken());
+						List<Byte> list = this.hprofHeapDumpSubRecordFilter
+								.get(val);
+						if (list == null) {
+							list = new ArrayList<Byte>();
+						}
+						list.add(subVal);
+						this.hprofHeapDumpSubRecordFilter.put(val, list);
+					}
+
 				}
 			}
 			try {
@@ -247,15 +265,13 @@ public class SplunkJavaAgent{
 					Thread.sleep(frequencySeconds * 1000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				try {
 					poller.execute();
 
 				} catch (Throwable t) {
 
 				}
-
-				
 
 			}
 		}
@@ -293,7 +309,11 @@ public class SplunkJavaAgent{
 		public void run() {
 
 			while (parent.isAlive()) {
+				try {
 
+					Thread.sleep(frequencySeconds * 1000);
+				} catch (InterruptedException e) {
+				}
 				try {
 					// do some housekeeping
 					File file = new File(this.hprofFile);
@@ -315,11 +335,6 @@ public class SplunkJavaAgent{
 
 				} catch (Throwable e) {
 
-				}
-				try {
-
-					Thread.sleep(frequencySeconds * 1000);
-				} catch (InterruptedException e) {
 				}
 				
 
@@ -474,7 +489,6 @@ public class SplunkJavaAgent{
 
 	}
 
-
 	public static void classLoaded(String className) {
 
 		if (agent.traceClassLoaded) {
@@ -574,9 +588,10 @@ public class SplunkJavaAgent{
 		}
 	}
 
-	public static void hprofRecordEvent(byte recordType, SplunkLogEvent event) {
+	public static void hprofRecordEvent(byte recordType, byte subRecordType,
+			SplunkLogEvent event) {
 
-		if (traceHprofRecordType(recordType)) {
+		if (traceHprofRecordType(recordType, subRecordType)) {
 			event.addPair("appName", agent.appName);
 			event.addPair("appID", agent.appID);
 			addUserTags(event);
@@ -606,14 +621,26 @@ public class SplunkJavaAgent{
 
 	}
 
-	private static boolean traceHprofRecordType(byte recordType) {
+	private static boolean traceHprofRecordType(byte recordType,
+			byte subRecordType) {
 		if (agent.hprofRecordFilter == null
 				|| agent.hprofRecordFilter.isEmpty())
 			return true;
 		else {
 			for (byte b : agent.hprofRecordFilter) {
-				if (b == recordType)
-					return true;
+				if (b == recordType) {
+					List<Byte> subrecords = agent.hprofHeapDumpSubRecordFilter
+							.get(recordType);
+					if (subrecords == null || subrecords.isEmpty()) {
+						return true;
+					} else {
+						for (byte bb : subrecords) {
+							if (bb == subRecordType) {
+								return true;
+							}
+						}
+					}
+				}
 			}
 		}
 		return false;

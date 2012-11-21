@@ -10,6 +10,11 @@ public class HprofIDField {
 		this.value = value;
 	}
 
+	public HprofIDField(long value) {
+
+		this.value = value;
+	}
+
 	public long getValue() {
 		if (size == 4)
 			return value & 0xffffffffL;

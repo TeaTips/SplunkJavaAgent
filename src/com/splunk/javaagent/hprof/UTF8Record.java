@@ -7,12 +7,11 @@ public class UTF8Record extends HprofRecord {
 	private HprofIDField idField;
 	private String name = "";
 
-
 	@Override
 	public void parseRecord() {
 
 		this.idField = readId();
-		
+
 		int charsLength = recordlength - parent.getHeader().getIdentifierSize();
 		if (charsLength > 0) {
 			try {
@@ -35,7 +34,5 @@ public class UTF8Record extends HprofRecord {
 		event.addPair("name", this.name);
 		return event;
 	}
-	
-	
 
 }

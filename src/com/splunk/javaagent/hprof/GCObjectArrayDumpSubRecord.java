@@ -15,23 +15,22 @@ public class GCObjectArrayDumpSubRecord extends HprofRecord {
 	private int size;
 	private String className;
 	private Map<String, String> fields;
-	
+
 	@Override
 	public void parseRecord() {
-		
-		
+
 		this.objectID = readId();
 		this.stackTraceSerial = buf.getInt();
 		this.numberOfElements = buf.getInt();
 		this.arrayClassID = readId();
-		
+
 		int idSize = parent.getHeader().getIdentifierSize();
-		
+
 		this.size = (4 * idSize) + (idSize * numberOfElements);
 		this.className = getNameForClassId(arrayClassID);
-		
+
 		this.fields = new HashMap<String, String>();
-		
+
 		if (includeHeaderSize)
 			this.size += idSize * 4;
 

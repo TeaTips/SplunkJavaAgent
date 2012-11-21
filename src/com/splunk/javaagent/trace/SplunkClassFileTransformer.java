@@ -11,8 +11,9 @@ import com.splunk.javaagent.SplunkJavaAgent;
 
 public class SplunkClassFileTransformer implements ClassFileTransformer {
 
-	public SplunkClassFileTransformer(){}
-	
+	public SplunkClassFileTransformer() {
+	}
+
 	@Override
 	public byte[] transform(ClassLoader loader, String className,
 			Class classBeingRedefined, ProtectionDomain protectionDomain,
@@ -20,7 +21,8 @@ public class SplunkClassFileTransformer implements ClassFileTransformer {
 
 		if (this.getClass().getClassLoader().equals(loader)) {
 
-			if (!SplunkJavaAgent.isBlackListed(className) && SplunkJavaAgent.isWhiteListed(className))
+			if (!SplunkJavaAgent.isBlackListed(className)
+					&& SplunkJavaAgent.isWhiteListed(className))
 				return processClass(className, classBeingRedefined,
 						classFileBuffer);
 			else
@@ -29,7 +31,7 @@ public class SplunkClassFileTransformer implements ClassFileTransformer {
 			return classFileBuffer;
 		}
 	}
-	
+
 	private byte[] processClass(String className, Class classBeingRedefined,
 			byte[] classFileBuffer) {
 

@@ -10,10 +10,10 @@ public class FrameRecord extends HprofRecord {
 	private HprofIDField sourceFileNameID;
 	private int classSerial;
 	private int lineNumber;
-	
+
 	@Override
 	public void parseRecord() {
-				
+
 		this.stackFrameID = readId();
 		this.methodNameID = readId();
 		this.methodSignatureID = readId();
@@ -34,7 +34,7 @@ public class FrameRecord extends HprofRecord {
 		event.addPair("sourceFileNameID", this.sourceFileNameID.toString());
 		event.addPair("classSerial", this.classSerial);
 		event.addPair("lineNumber", this.lineNumber);
-		
+
 		return event;
 	}
 

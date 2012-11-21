@@ -4,14 +4,13 @@ import com.splunk.javaagent.SplunkLogEvent;
 
 public class GCRootMonitorUsedSubRecord extends HprofRecord {
 
-private HprofIDField objectID;
-	
+	private HprofIDField objectID;
 
 	@Override
 	public void parseRecord() {
 
 		this.objectID = readId();
-		
+
 	}
 
 	@Override
@@ -20,8 +19,8 @@ private HprofIDField objectID;
 				"splunkagent", false, false);
 		addCommonSplunkLogEventFields(event);
 		event.addPair("objectID", this.objectID.toString());
-		
+
 		return event;
 	}
-	
+
 }

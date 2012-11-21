@@ -5,13 +5,12 @@ import com.splunk.javaagent.SplunkLogEvent;
 public class GCRootStickyClassSubRecord extends HprofRecord {
 
 	private HprofIDField objectID;
-	
 
 	@Override
 	public void parseRecord() {
 
 		this.objectID = readId();
-		
+
 	}
 
 	@Override
@@ -22,7 +21,7 @@ public class GCRootStickyClassSubRecord extends HprofRecord {
 		event.addPair("objectID", this.objectID.toString());
 		String name = "null";
 		HprofIDField nameID = (HprofIDField) parent.classNameMap.get(objectID);
-		if (nameID!= null)
+		if (nameID != null)
 			name = (String) parent.nameMap.get(nameID);
 		event.addPair("name", name);
 		return event;

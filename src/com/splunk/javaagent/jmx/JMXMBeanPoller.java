@@ -71,10 +71,11 @@ public class JMXMBeanPoller {
 						new ProcessServerThread(server,
 								this.formatter.getFormatterInstance(),
 								this.transport.getTransportInstance(),
-								this.registerNotifications, this.serverConnection)
-								.start();
+								this.registerNotifications,
+								this.serverConnection).start();
 					}
-					//we only want to register a notification listener on the first iteration
+					// we only want to register a notification listener on the
+					// first iteration
 					this.registerNotifications = false;
 				} else {
 					// logger.error("No JMX servers have been specified");

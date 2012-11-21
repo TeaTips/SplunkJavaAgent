@@ -10,23 +10,26 @@ public class AllocSite {
 	private int numberOfBytesAllocated;
 	private int numberOfInstancesAllocated;
 
-	
-	public String toString(){
-		
+	public String toString() {
+
 		StringBuffer sb = new StringBuffer();
 		sb.append("type").append("=").append(getTypeString()).append(":");
 		sb.append("classSerial").append("=").append(classSerial).append(":");
-		sb.append("stackTraceSerial").append("=").append(stackTraceSerial).append(":");
-		sb.append("numberOfBytesAlive").append("=").append(numberOfBytesAlive).append(":");
-		sb.append("numberOfInstancesAlive").append("=").append(numberOfInstancesAlive).append(":");
-		sb.append("numberOfBytesAllocated").append("=").append(numberOfBytesAllocated).append(":");
-		sb.append("numberOfInstancesAllocated").append("=").append(numberOfInstancesAllocated);
-		
+		sb.append("stackTraceSerial").append("=").append(stackTraceSerial)
+				.append(":");
+		sb.append("numberOfBytesAlive").append("=").append(numberOfBytesAlive)
+				.append(":");
+		sb.append("numberOfInstancesAlive").append("=")
+				.append(numberOfInstancesAlive).append(":");
+		sb.append("numberOfBytesAllocated").append("=")
+				.append(numberOfBytesAllocated).append(":");
+		sb.append("numberOfInstancesAllocated").append("=")
+				.append(numberOfInstancesAllocated);
+
 		return sb.toString();
-		
-		
+
 	}
-			
+
 	public byte getType() {
 		return type;
 	}

@@ -1,6 +1,5 @@
 package com.splunk.javaagent;
 
-
 /**
  * <pre>
  * This is a class to encapsulate a Splunk Log Event Message using Splunk best practice logging semantics.

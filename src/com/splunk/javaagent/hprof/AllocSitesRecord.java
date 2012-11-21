@@ -14,11 +14,11 @@ public class AllocSitesRecord extends HprofRecord {
 	private long totalBytesAllocated;
 	private long totalInstancesAllocated;
 	private int numberOfSites;
-	private List <AllocSite> sites;
-	
+	private List<AllocSite> sites;
+
 	@Override
 	public void parseRecord() {
-		
+
 		this.flags = buf.getShort();
 		this.cutoffRatio = buf.getInt();
 		this.totalLiveBytes = buf.getInt();
@@ -26,15 +26,14 @@ public class AllocSitesRecord extends HprofRecord {
 		this.totalBytesAllocated = buf.getLong();
 		this.totalInstancesAllocated = buf.getLong();
 		this.numberOfSites = buf.getInt();
-		
-		
-		this.sites = new ArrayList<AllocSite>();		
+
+		this.sites = new ArrayList<AllocSite>();
 		int sitesLength = recordlength - 34;
-		
+
 		while (sitesLength > 0) {
 			try {
 				AllocSite site = new AllocSite();
-				
+
 				site.setType(buf.get());
 				site.setClassSerial(buf.getInt());
 				site.setStackTraceSerial(buf.getInt());
@@ -44,20 +43,19 @@ public class AllocSitesRecord extends HprofRecord {
 				site.setNumberOfInstancesAllocated(buf.getInt());
 				sites.add(site);
 				sitesLength -= 25;
-				
+
 			} catch (Throwable t) {
 			}
 		}
-		
-		
+
 	}
 
 	@Override
 	public SplunkLogEvent getSplunkLogEvent() {
-		SplunkLogEvent event = new SplunkLogEvent("hprof_allocsites", "splunkagent",
-				false, false);
+		SplunkLogEvent event = new SplunkLogEvent("hprof_allocsites",
+				"splunkagent", false, false);
 		addCommonSplunkLogEventFields(event);
-		
+
 		event.addPair("flags", this.flags);
 		event.addPair("cutoffRatio", this.cutoffRatio);
 		event.addPair("totalLiveBytes", this.totalLiveBytes);
@@ -66,9 +64,9 @@ public class AllocSitesRecord extends HprofRecord {
 		event.addPair("totalInstancesAllocated", this.totalInstancesAllocated);
 		event.addPair("numberOfSites", this.numberOfSites);
 		event.addPair("sites", toSplunkMVString(sites));
-		
+
 		return event;
-		
+
 	}
 
 }
