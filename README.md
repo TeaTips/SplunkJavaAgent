@@ -76,40 +76,40 @@ The names of the JMX config files and the frequency at which they are fired is c
 
 ## Properties Options
 
-agent.app.name : name of the application ie: Tomcat
-agent.app.instance : instance identifier of the application ie: might be a node id in a cluster
-agent.userEventTags : comma delimited list of user defined key=value pairs to add to events sent to Splunk
+* agent.app.name : name of the application ie: Tomcat
+* agent.app.instance : instance identifier of the application ie: might be a node id in a cluster
+* agent.userEventTags : comma delimited list of user defined key=value pairs to add to events sent to Splunk
 
-splunk.transport.impl : fully qualified class name, an implementation of the "com.splunk.javaagent.transport.SplunkTransport" interface
-splunk.transport.tcp.host : Splunk host name for the SplunkTCPTransport
-splunk.transport.tcp.port : Splunk TCP port for the SplunkTCPTransport
-splunk.transport.tcp.maxQueueSize : defaults to 500K , format [<integer>|<integer>[KB|MB|GB]]
-splunk.transport.tcp.dropEventsOnQueueFull : true | false , if true then the queue will get emptied when it fills up to accommodate new data.
+* splunk.transport.impl : fully qualified class name, an implementation of the "com.splunk.javaagent.transport.SplunkTransport" interface
+* splunk.transport.tcp.host : Splunk host name for the SplunkTCPTransport
+* splunk.transport.tcp.port : Splunk TCP port for the SplunkTCPTransport
+* splunk.transport.tcp.maxQueueSize : defaults to 500K , format [<integer>|<integer>[KB|MB|GB]]
+* splunk.transport.tcp.dropEventsOnQueueFull : true | false , if true then the queue will get emptied when it fills up to accommodate new data.
 
-trace.whitelist : comma delimited string of patterns, see below
-trace.blacklist comma delimited string of patterns, see below
-trace.methodEntered : true | false
-trace.methodExited : true | false
-trace.classLoaded : true | false
-trace.errors : true | false
+* trace.whitelist : comma delimited string of patterns, see below
+* trace.blacklist comma delimited string of patterns, see below
+* trace.methodEntered : true | false
+* trace.methodExited : true | false
+* trace.classLoaded : true | false
+* trace.errors : true | false
 
-trace.hprof=true | false
-trace.hprof.file=/etc/tmp/dump.hprof
-trace.hprof.frequency=value in seconds , the frequency at which to generate hprof dumps
-trace.hprof.recordtypes=comma delimited list of HPROF record types to trace.Decimal value of the record tag id (as per the HPROF spec).
+* trace.hprof=true | false
+* trace.hprof.file=/etc/tmp/dump.hprof
+* trace.hprof.frequency=value in seconds , the frequency at which to generate hprof dumps
+* trace.hprof.recordtypes=comma delimited list of HPROF record types to trace.Decimal value of the record tag id (as per the HPROF spec).
 
-trace.jmx=true | false
-trace.jmx.configfiles=comma delimited list of XML files(minus the ".xml" suffix) that should reside in the root of splunkagent.jar
-trace.jmx.default.frequency=value in seconds
-trace.jmx.${configfile}.frequency=value in seconds , optionally you may declare each config file to fire at differing frequencys
+* trace.jmx=true | false
+* trace.jmx.configfiles=comma delimited list of XML files(minus the ".xml" suffix) that should reside in the root of splunkagent.jar
+* trace.jmx.default.frequency=value in seconds
+* trace.jmx.${configfile}.frequency=value in seconds , optionally you may declare each config file to fire at differing frequencys
 
 ## Whitelist/Blacklist Patterns
 
 
-Partial package name : com/splunk/
-Full package name : com/splunk/javaagent/test/
-Fully qualified class : com/splunk/javaagent/test/MyClass
-Fully qualified class and method : com/splunk/javaagent/test/MyClass:someMethod
+* Partial package name : com/splunk/
+* Full package name : com/splunk/javaagent/test/
+* Fully qualified class : com/splunk/javaagent/test/MyClass
+* Fully qualified class and method : com/splunk/javaagent/test/MyClass:someMethod
 
 ## Contact
 
