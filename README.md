@@ -1,9 +1,11 @@
-## Splunk Java Agent v0.3
+## Splunk Java Agent v0.5b
 
 ## Overview
 
 
-This JVM(Java Virtual Machine)agent can be used to obtain metrics pertaining to :
+This JVM(Java Virtual Machine)agent can be used to obtain metrics for Java APM(Application Performance Monitoring).
+
+The types of metrics extracted by the agent and streamed to Splunk are :
 
 1. class loading
 2. method execution 
@@ -11,19 +13,22 @@ This JVM(Java Virtual Machine)agent can be used to obtain metrics pertaining to 
 4. method call tracing(count of calls, group by app/app node(for clustered systems)/thread/class/package)
 5. application/thread stalls
 6. errors/exceptions/throwables
-7. JVM heap analysis, object allocation count/size, leak detection
+7. JVM heap analysis, object/array allocation count/size,class dumps, leak detection, stack traces, frames
 8. JMX attributes/operations/notifications from the JVM or Application layer MBean Domains
 
 The agent is able to obtain these metrics dynamically at runtime by "weaving" the necessary bytecode into loaded classes using the Java instrumentation API and the ASM framework.
 There is no source code changes required by the end user and no class files on disk are altered.
-JMX metrics are obtained via polling MBeans/listening for notifications in the locally running Platform MBeanServer.
-JVM heap profiling metrics are obtained via decoding a dynamically generated HPROF dump.
-By default , the metrics will be streamed directly into Splunk over TCP, however the transport mechanism is configurable and extensible.
 
+JMX metrics are obtained via polling MBeans attributes, invoking operations & listening for notifications in the locally running Platform MBeanServer.
+
+JVM heap profiling metrics are obtained via decoding a dynamically generated HPROF dump.
+
+By default , the metrics will be streamed directly into Splunk over TCP, however the transport mechanism is configurable and extensible.
 
 In the Splunk UI you can then create Splunk searches over the agent data and visualizations, reports,alerts etc.. over the results of the searches.
 The events are already being fed into Splunk in best practice semantic format, key=value pairs , no additional field extractions are required.
-As Splunk is being using to index all the data and perform searches(real time if you wish) massive amounts of tracing data from as many JVMs as you need to monitor can be indexed and correlated and you can leverage all of the scalability and HA features of the Splunk platform.
+As Splunk is being using to index all the data and perform searches(real time if you wish) massive amounts of tracing data from as many JVMs as you need to 
+monitor can be indexed and correlated and you can leverage all of the scalability and HA features of the Splunk platform to deliver an end to end Java APM solution.
 
 
 ## Supported Java Runtime
