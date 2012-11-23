@@ -46,12 +46,7 @@ public class HprofDump {
 							elapsedTimeMicroSeconds, recordLength, buf);
 					if (record != null) {
 						if (record instanceof HeapDumpRecord) {
-							for (HprofRecord subrecord : ((HeapDumpRecord) record)
-									.getSubRecords()) {
-								SplunkJavaAgent.hprofRecordEvent(tag,
-										subrecord.recordType,
-										subrecord.getSplunkLogEvent());
-							}
+							//do nothing
 						} else {
 							SplunkJavaAgent.hprofRecordEvent(tag, (byte) 0,
 									record.getSplunkLogEvent());

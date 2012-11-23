@@ -3,85 +3,86 @@ package com.splunk.javaagent.hprof;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.splunk.javaagent.SplunkJavaAgent;
 import com.splunk.javaagent.SplunkLogEvent;
 
 public class HeapDumpRecord extends HprofRecord {
 
-	private List<HprofRecord> subRecords;
-
+	
 	@Override
 	public void parseRecord() {
 
-		this.subRecords = new ArrayList<HprofRecord>();
-
+		
 		int endposition = buf.position() + recordlength;
 
+		HprofRecord subRecord = null;
 		while (buf.position() < endposition) {
 
 			byte subRecordType = buf.get();
-
+			
+			
 			switch (subRecordType) {
 			case RECORD_GC_ROOT_UNKNOWN:
 
-				this.subRecords.add(parseGCRootUnknown());
+				subRecord=parseGCRootUnknown();
 				break;
 
 			case RECORD_GC_ROOT_JNI_GLOBAL:
 
-				this.subRecords.add(parseGCRootJNIGlobal());
+				subRecord=parseGCRootJNIGlobal();
 				break;
 
 			case RECORD_GC_ROOT_JNI_LOCAL:
 
-				this.subRecords.add(parseGCRootJNILocal());
+				subRecord=parseGCRootJNILocal();
 				break;
 
 			case RECORD_GC_ROOT_JAVA_FRAME:
 
-				this.subRecords.add(parseGCRootJavaFrame());
+				subRecord=parseGCRootJavaFrame();
 				break;
 
 			case RECORD_GC_ROOT_NATIVE_STACK:
 
-				this.subRecords.add(parseGCRootNativeStack());
+				subRecord=parseGCRootNativeStack();
 				break;
 
 			case RECORD_GC_ROOT_STICKY_CLASS:
 
-				this.subRecords.add(parseGCRootStickyClass());
+				subRecord=parseGCRootStickyClass();
 				break;
 
 			case RECORD_GC_ROOT_THREAD_BLOCK:
 
-				this.subRecords.add(parseGCRootThreadBlock());
+				subRecord=parseGCRootThreadBlock();
 				break;
 
 			case RECORD_GC_ROOT_MONITOR_USED:
 
-				this.subRecords.add(parseGCRootMonitorUsed());
+				subRecord=parseGCRootMonitorUsed();
 				break;
 
 			case RECORD_GC_ROOT_THREAD_OBJ:
 
-				this.subRecords.add(parseGCRootThreadObject());
+				subRecord=parseGCRootThreadObject();
 				break;
 
 			case RECORD_GC_CLASS_DUMP:
-				this.subRecords.add(parseGCCLassDump());
+				subRecord=parseGCCLassDump();
 				break;
 
 			case RECORD_GC_INSTANCE_DUMP:
-				this.subRecords.add(parseGCInstanceDump());
+				subRecord=parseGCInstanceDump();
 
 				break;
 
 			case RECORD_GC_OBJ_ARRAY_DUMP:
-				this.subRecords.add(parseGCObjectArrayDump());
+				subRecord=parseGCObjectArrayDump();
 
 				break;
 
 			case RECORD_GC_PRIM_ARRAY_DUMP:
-				this.subRecords.add(parseGCPrimitiveArrayDump());
+				subRecord=parseGCPrimitiveArrayDump();
 
 				break;
 
@@ -89,6 +90,8 @@ public class HeapDumpRecord extends HprofRecord {
 
 				break;
 			}
+			if(subRecord != null)
+			  SplunkJavaAgent.hprofRecordEvent(this.recordType,subRecord.recordType,subRecord.getSplunkLogEvent());
 
 		}
 
@@ -223,8 +226,6 @@ public class HeapDumpRecord extends HprofRecord {
 		return event;
 	}
 
-	public List<HprofRecord> getSubRecords() {
-		return subRecords;
-	}
+	
 
 }
