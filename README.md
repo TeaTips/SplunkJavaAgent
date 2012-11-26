@@ -80,6 +80,7 @@ The names of the JMX config files and the frequency at which they are fired is c
 * agent.app.instance : instance identifier of the application ie: might be a node id in a cluster
 * agent.userEventTags : comma delimited list of user defined key=value pairs to add to events sent to Splunk
 
+* splunk.transport.internalQueueSize : defaults to 10000 events , this the internal memory queue that buffers the events before being sent to Splunk.
 * splunk.transport.impl : fully qualified class name, an implementation of the "com.splunk.javaagent.transport.SplunkTransport" interface
 * splunk.transport.tcp.host : Splunk host name for the SplunkTCPTransport
 * splunk.transport.tcp.port : Splunk TCP port for the SplunkTCPTransport

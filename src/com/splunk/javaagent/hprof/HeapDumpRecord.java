@@ -1,7 +1,6 @@
 package com.splunk.javaagent.hprof;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 import com.splunk.javaagent.SplunkJavaAgent;
 import com.splunk.javaagent.SplunkLogEvent;
@@ -15,11 +14,11 @@ public class HeapDumpRecord extends HprofRecord {
 		
 		int endposition = buf.position() + recordlength;
 
-		HprofRecord subRecord = null;
+		
 		while (buf.position() < endposition) {
 
 			byte subRecordType = buf.get();
-			
+			HprofRecord subRecord = null;
 			
 			switch (subRecordType) {
 			case RECORD_GC_ROOT_UNKNOWN:

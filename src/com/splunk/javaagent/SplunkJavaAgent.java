@@ -42,6 +42,7 @@ public class SplunkJavaAgent {
 	private int hprofFrequency = 600;// seconds
 	private Map<String, String> userTags;
 	private ArrayBlockingQueue<SplunkLogEvent> eventQueue;
+	private int queueSize = 10000;
 	private String appName;
 	private String appID;
 
@@ -51,7 +52,7 @@ public class SplunkJavaAgent {
 
 		this.whiteList = new ArrayList<FilterListItem>();
 		this.blackList = new ArrayList<FilterListItem>();
-		this.eventQueue = new ArrayBlockingQueue<SplunkLogEvent>(1000);
+		
 	}
 
 	public static void premain(String agentArgument,
@@ -453,8 +454,16 @@ public class SplunkJavaAgent {
 			if (keyString.startsWith("splunk."))
 				args.put(keyString, props.getProperty(keyString));
 		}
+		
+		try {
+			this.queueSize = Integer.parseInt(props.getProperty("splunk.transport.internalQueueSize", "10000"));
+		} catch (NumberFormatException e) {
+
+		}
 
 		try {
+			
+			this.eventQueue = new ArrayBlockingQueue<SplunkLogEvent>(queueSize);
 			this.transport.init(args);
 			this.transport.start();
 			this.transporterThread = new TransporterThread(
