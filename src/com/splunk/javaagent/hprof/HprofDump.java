@@ -46,7 +46,7 @@ public class HprofDump {
 							elapsedTimeMicroSeconds, recordLength, buf);
 					if (record != null) {
 						if (record instanceof HeapDumpRecord) {
-							//do nothing
+							// do nothing
 						} else {
 							SplunkJavaAgent.hprofRecordEvent(tag, (byte) 0,
 									record.getSplunkLogEvent());

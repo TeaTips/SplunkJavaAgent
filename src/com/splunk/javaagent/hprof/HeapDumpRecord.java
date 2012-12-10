@@ -1,87 +1,82 @@
 package com.splunk.javaagent.hprof;
 
-
-
 import com.splunk.javaagent.SplunkJavaAgent;
 import com.splunk.javaagent.SplunkLogEvent;
 
 public class HeapDumpRecord extends HprofRecord {
 
-	
 	@Override
 	public void parseRecord() {
 
-		
 		int endposition = buf.position() + recordlength;
 
-		
 		while (buf.position() < endposition) {
 
 			byte subRecordType = buf.get();
 			HprofRecord subRecord = null;
-			
+
 			switch (subRecordType) {
 			case RECORD_GC_ROOT_UNKNOWN:
 
-				subRecord=parseGCRootUnknown();
+				subRecord = parseGCRootUnknown();
 				break;
 
 			case RECORD_GC_ROOT_JNI_GLOBAL:
 
-				subRecord=parseGCRootJNIGlobal();
+				subRecord = parseGCRootJNIGlobal();
 				break;
 
 			case RECORD_GC_ROOT_JNI_LOCAL:
 
-				subRecord=parseGCRootJNILocal();
+				subRecord = parseGCRootJNILocal();
 				break;
 
 			case RECORD_GC_ROOT_JAVA_FRAME:
 
-				subRecord=parseGCRootJavaFrame();
+				subRecord = parseGCRootJavaFrame();
 				break;
 
 			case RECORD_GC_ROOT_NATIVE_STACK:
 
-				subRecord=parseGCRootNativeStack();
+				subRecord = parseGCRootNativeStack();
 				break;
 
 			case RECORD_GC_ROOT_STICKY_CLASS:
 
-				subRecord=parseGCRootStickyClass();
+				subRecord = parseGCRootStickyClass();
 				break;
 
 			case RECORD_GC_ROOT_THREAD_BLOCK:
 
-				subRecord=parseGCRootThreadBlock();
+				subRecord = parseGCRootThreadBlock();
 				break;
 
 			case RECORD_GC_ROOT_MONITOR_USED:
 
-				subRecord=parseGCRootMonitorUsed();
+				subRecord = parseGCRootMonitorUsed();
 				break;
 
 			case RECORD_GC_ROOT_THREAD_OBJ:
 
-				subRecord=parseGCRootThreadObject();
+				subRecord = parseGCRootThreadObject();
 				break;
 
 			case RECORD_GC_CLASS_DUMP:
-				subRecord=parseGCCLassDump();
+				subRecord = parseGCCLassDump();
 				break;
 
 			case RECORD_GC_INSTANCE_DUMP:
-				subRecord=parseGCInstanceDump();
+				subRecord = parseGCInstanceDump();
 
 				break;
 
 			case RECORD_GC_OBJ_ARRAY_DUMP:
-				subRecord=parseGCObjectArrayDump();
+				subRecord = parseGCObjectArrayDump();
 
 				break;
 
 			case RECORD_GC_PRIM_ARRAY_DUMP:
-				subRecord=parseGCPrimitiveArrayDump();
+				subRecord = parseGCPrimitiveArrayDump();
 
 				break;
 
@@ -89,8 +84,9 @@ public class HeapDumpRecord extends HprofRecord {
 
 				break;
 			}
-			if(subRecord != null)
-			  SplunkJavaAgent.hprofRecordEvent(this.recordType,subRecord.recordType,subRecord.getSplunkLogEvent());
+			if (subRecord != null)
+				SplunkJavaAgent.hprofRecordEvent(this.recordType,
+						subRecord.recordType, subRecord.getSplunkLogEvent());
 
 		}
 
@@ -224,7 +220,5 @@ public class HeapDumpRecord extends HprofRecord {
 
 		return event;
 	}
-
-	
 
 }

@@ -52,7 +52,7 @@ public class SplunkJavaAgent {
 
 		this.whiteList = new ArrayList<FilterListItem>();
 		this.blackList = new ArrayList<FilterListItem>();
-		
+
 	}
 
 	public static void premain(String agentArgument,
@@ -337,7 +337,6 @@ public class SplunkJavaAgent {
 				} catch (Throwable e) {
 
 				}
-				
 
 			}
 		}
@@ -454,15 +453,16 @@ public class SplunkJavaAgent {
 			if (keyString.startsWith("splunk."))
 				args.put(keyString, props.getProperty(keyString));
 		}
-		
+
 		try {
-			this.queueSize = Integer.parseInt(props.getProperty("splunk.transport.internalQueueSize", "10000"));
+			this.queueSize = Integer.parseInt(props.getProperty(
+					"splunk.transport.internalQueueSize", "10000"));
 		} catch (NumberFormatException e) {
 
 		}
 
 		try {
-			
+
 			this.eventQueue = new ArrayBlockingQueue<SplunkLogEvent>(queueSize);
 			this.transport.init(args);
 			this.transport.start();
@@ -536,6 +536,15 @@ public class SplunkJavaAgent {
 			event.addPair("methodDesc", desc);
 			event.addPair("threadID", Thread.currentThread().getId());
 			event.addPair("threadName", Thread.currentThread().getName());
+			
+			try {
+				StackTraceElement ste = Thread.currentThread().getStackTrace()[3];
+				if(ste != null)
+				  event.addPair("lineNumber", ste.getLineNumber());
+				  event.addPair("sourceFileName", ste.getFileName());
+			} catch (Exception e1) {
+			}
+			
 			addUserTags(event);
 			try {
 				agent.eventQueue.put(event);
